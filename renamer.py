@@ -28,29 +28,28 @@ query_title = "t="
 basepath = os.path.dirname(os.path.realpath(__file__))
 
 # Fetch movie rating from omdbapi.com. API return JSON format.
-def getMovieInfo(movie_title):
+def getMovieRating(movie_title):
     movie_title = movie_title.strip().replace(" ", "+")
-    # Request API for JSON response
     with urllib.request.urlopen(base_uri + query_title + movie_title) as url:
         data = json.loads(url.read().decode())    # decode to utf-8
-    if 'imdbRating' not in data or 'Year' not in data:
+    if 'imdbRating' not in data:
         print ("Invalid response for " + movie_title)
         return None
-    return [data['imdbRating'], data['Year']]
+    # Make sure server response matches intended regex
+    pattern = re.compile('[0-9].[0-9]')
+    if pattern.match(data['imdbRating']) is None:
+        return None
+    return data['imdbRating']
 
 # Checks if parameter file name already has a rating.
 # Movie ratings are in the format (\d.\d)
-def hasRating(filename):
+def hasNewRating(filename):
     pattern = re.compile('\[IMDb [0-9].[0-9]\]')
-    return pattern.search(filename) is not None:
+    return pattern.search(filename) is not None
 
 def hasOldRating(filename):
     pattern = re.compile('\([0-9].[0-9]\)')
-    return pattern.search(filename) is not None:
-
-def hasYear(filename):
-    pattern = re.compile('\([0-9]{4}\)')
-    return pattern.search(filename) is not None:
+    return pattern.search(filename) is not None
 
 def removeOldRating(filename):
     index = filename.find('(')
@@ -72,22 +71,24 @@ def main():
 
     for filename in os.listdir(basepath):
         # Ignore hidden files and this script file
-        if filename[0] is '.' or filename == __file__: continue
-
-        if hasRating(filename): continue
-        if hasOldRating(filename): filename = removeOldRating(filename)
+        if filename[0] is '.' or filename == __file__:
+            continue
+        if hasNewRating(filename):
+            continue
 
         movie_title = getMovieTitle(filename)
-        file_ext = os.path.splitext(filename)[1]
-        movie_rating, movie_year = getMovieInfo(movie_title)
-        # Continue if not rating is found
-        if (movie_rating is None): continue
+        movie_rating = getMovieRating(movie_title)
+        # Continue if no rating is found
+        if (movie_rating is None):
+            continue
+        if hasOldRating(filename):
+            filename = removeOldRating(filename)
 
         formatted_rating = '[IMDb ' + movie_rating + '] '
-        file_no_ext = os.path.splitext(filename)[0]
+        file_no_ext, file_ext = os.path.splitext(filename)
         new_file_name = formatted_rating + file_no_ext + file_ext
         os.rename(os.path.join(filename), os.path.join(new_file_name))
-        print ("\'" + filename + "\' -> \'" + new_file_name + "\'")
+        print ("\'" + filename + "\' -> \'" + formatted_rating.strip() + "\'")
 
     print ("Done!")
 
