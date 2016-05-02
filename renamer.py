@@ -30,6 +30,8 @@ basepath = "C:/Users/Vishal/Downloads/Movies/"
 
 # Fetch movie rating from omdbapi.com. API return JSON format.
 def getRating(movie_title):
+    movie_title = movie_title.strip().replace(" ", "+")
+    # Request API for JSON response
     with urllib.request.urlopen(base_uri + query_title + movie_title) as url:
         movie_data = json.loads(url.read().decode())    # decode to utf-8
     if 'imdbRating' not in movie_data:
@@ -40,7 +42,13 @@ def getRating(movie_title):
 # Checks if parameter file name already has a rating.
 # Movie ratings are in the format (\d.\d)
 def hasRating(filename):
-    pattern = re.compile('IMDb \([0-9].[0-9]\)')
+    pattern = re.compile('\[IMDb [0-9].[0-9]\]')
+    if pattern.search(filename) is not None:
+        return True
+    return False
+
+def hasOldRating(filename):
+    pattern = re.compile('\([0-9].[0-9]\)')
     if pattern.search(filename) is not None:
         return True
     return False
@@ -54,12 +62,16 @@ def getMovieTitle(filename):
         return filename.split('[')[0]
     return ''.join(os.path.splitext(filename)[0])
 
-
 def main():
     renamed = 0
     skipped = 0
+    reformatted = 0
+
     print ("Running renamer...")
     for filename in os.listdir(basepath):
+        if hasOldRating(filename):
+            renamed += 1;
+
         if hasRating(filename) is True:
             skipped += 1
             continue
@@ -80,7 +92,11 @@ def main():
         print ("\'" + filename + "\' -> \'" + new_file_name + "\'")
         renamed += 1
 
-    print ("Finished process. " + renamed + " renamed " + skipped + " skipped")
+    print ("Done. ", end="")
+    if (renamed is 0 and skipped is 0 and reformatted is 0): print ("No changes made.")
+    if (renamed > 0): print (renamed + " renamed, ", end="")
+    if (skipped > 0): print(skipped + " skipped, ", end="")
+    if (reformatted > 0): print(reformatted + " reformatted.")
 
 if __name__ == '__main__':
     main()
