@@ -44,19 +44,21 @@ def getRating(movie_title):
 # Movie ratings are in the format (\d.\d)
 def hasRating(filename):
     pattern = re.compile('\[IMDb [0-9].[0-9]\]')
-    if pattern.search(filename) is not None:
-        return True
-    return False
+    if pattern.search(filename) is None:
+        return False
+    return True
 
 def hasOldRating(filename):
     pattern = re.compile('\([0-9].[0-9]\)')
-    if pattern.search(filename) is not None:
-        return True
-    return False
+    if pattern.search(filename) is None:
+        return False
+    return True
 
 def removeOldRating(filename):
-
-    return filename
+    index = filename.find('(')
+    new_filename = filename.replace(filename[index-1:index+5], "")
+    os.rename(os.path.join(filename), os.path.join(new_filename))
+    return new_filename
 
 # Get the movie title by stripping out excess information such as the
 # year released or video definition
@@ -68,41 +70,27 @@ def getMovieTitle(filename):
     return ''.join(os.path.splitext(filename)[0])
 
 def main():
-    renamed = 0
-    skipped = 0
-    reformatted = 0
-
-    print ("Running renamer...")
+    print ("Starting...")
     for filename in os.listdir(basepath):
-        if hasRating(filename) is True:
-            skipped += 1
-            continue
+        # Ignore hidden files and this script file
+        if filename[0] is '.' or filename == __file__: continue
 
-        if hasOldRating(filename):
-            filename = removeOldRating(filename)
-            renamed += 1;
+        if hasRating(filename): continue
+        if hasOldRating(filename): filename = removeOldRating(filename)
 
         movie_title = getMovieTitle(filename)
         file_ext = os.path.splitext(filename)[1]
-        print (movie_title + "\n\n")
         movie_rating = getRating(movie_title)
-        if (movie_rating is None):
-            skipped += 1
-            continue
+        # Continue if not rating is found
+        if (movie_rating is None): continue
 
         formatted_rating = '[IMDb ' + movie_rating + '] '
         file_no_ext = os.path.splitext(filename)[0]
         new_file_name = formatted_rating + file_no_ext + file_ext
-        os.rename(os.path.join(basepath + filename), os.path.join(basepath + new_file_name))
-
+        os.rename(os.path.join(filename), os.path.join(new_file_name))
         print ("\'" + filename + "\' -> \'" + new_file_name + "\'")
-        renamed += 1
 
-    print ("Done. ", end="")
-    if (renamed is 0 and skipped is 0 and reformatted is 0): print ("No changes made.")
-    if (renamed > 0): print (renamed + " renamed, ", end="")
-    if (skipped > 0): print(skipped + " skipped, ", end="")
-    if (reformatted > 0): print(reformatted + " reformatted.")
+    print ("Done!")
 
 if __name__ == '__main__':
     main()
