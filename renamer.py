@@ -25,7 +25,8 @@ import os, json, urllib.request, re
 base_uri = "http://www.omdbapi.com/?"
 query_title = "t="
 
-basepath = "C:/Users/Vishal/Downloads/Movies/"
+basepath = os.path.dirname(os.path.realpath(__file__))
+# basepath = "C:/Users/Vishal/Downloads/Movies/"
 # basepath = "E:/Movies"
 
 # Fetch movie rating from omdbapi.com. API return JSON format.
@@ -53,6 +54,10 @@ def hasOldRating(filename):
         return True
     return False
 
+def removeOldRating(filename):
+
+    return filename
+
 # Get the movie title by stripping out excess information such as the
 # year released or video definition
 def getMovieTitle(filename):
@@ -69,12 +74,13 @@ def main():
 
     print ("Running renamer...")
     for filename in os.listdir(basepath):
-        if hasOldRating(filename):
-            renamed += 1;
-
         if hasRating(filename) is True:
             skipped += 1
             continue
+
+        if hasOldRating(filename):
+            filename = removeOldRating(filename)
+            renamed += 1;
 
         movie_title = getMovieTitle(filename)
         file_ext = os.path.splitext(filename)[1]
