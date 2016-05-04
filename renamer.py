@@ -67,8 +67,6 @@ def getMovieTitle(filename):
     return ''.join(os.path.splitext(filename)[0])
 
 def main():
-    print ("Starting...")
-
     for filename in os.listdir(basepath):
         # Ignore hidden files and this script file
         if filename[0] is '.' or filename == __file__:
@@ -88,9 +86,9 @@ def main():
         file_no_ext, file_ext = os.path.splitext(filename)
         new_file_name = formatted_rating + file_no_ext + file_ext
         os.rename(os.path.join(filename), os.path.join(new_file_name))
-        print ("\'" + filename + "\' -> \'" + formatted_rating.strip() + "\'")
+        print ("Processing \'" + movie_title + "\' -> \'" + formatted_rating[1:-2])
 
-    print ("Done!")
+    print ("\nDone!")
 
 if __name__ == '__main__':
     main()
