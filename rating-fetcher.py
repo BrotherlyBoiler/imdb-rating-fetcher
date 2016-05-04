@@ -36,7 +36,7 @@ def getMovieRating(movie_title):
         print ("Invalid response for " + movie_title)
         return None
     # Make sure server response matches intended regex
-    pattern = re.compile('[0-9].[0-9]')
+    pattern = re.compile('\d\.\d')
     if pattern.match(data['imdbRating']) is None:
         return None
     return data['imdbRating']
@@ -44,11 +44,11 @@ def getMovieRating(movie_title):
 # Checks if parameter file name already has a rating.
 # Movie ratings are in the format (\d.\d)
 def hasNewRating(filename):
-    pattern = re.compile('\[IMDb [0-9].[0-9]\]')
+    pattern = re.compile('\[IMDb \d\.\d\]')
     return pattern.search(filename) is not None
 
 def hasOldRating(filename):
-    pattern = re.compile('\([0-9].[0-9]\)')
+    pattern = re.compile('\(\d\.\d\)')
     return pattern.search(filename) is not None
 
 def removeOldRating(filename):
@@ -86,7 +86,8 @@ def main():
         file_no_ext, file_ext = os.path.splitext(filename)
         new_file_name = formatted_rating + file_no_ext + file_ext
         os.rename(os.path.join(filename), os.path.join(new_file_name))
-        print ("Processing \'" + movie_title + "\' -> \'" + formatted_rating[1:-2])
+
+        print ("Processed \'" + movie_title + "\' -> " + formatted_rating[1:-2])
 
     print ("\nDone!")
 
