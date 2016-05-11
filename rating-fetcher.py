@@ -19,7 +19,10 @@
     3. [IMDb 7.1] P.S. I Love You (2010) [1080p].avi
 '''
 
-import os, json, urllib.request, re
+import os
+import json
+import urllib.request
+import re
 
 # Query related constants
 base_uri = "http://www.omdbapi.com/?"
@@ -33,10 +36,10 @@ def getMovieRating(movie_title):
     with urllib.request.urlopen(base_uri + query_title + movie_title) as url:
         data = json.loads(url.read().decode())    # decode to utf-8
     if 'imdbRating' not in data:
-        print ("Invalid response for " + movie_title)
+        print ("Invalid server response for " + movie_title)
         return None
     # Make sure server response matches intended regex
-    pattern = re.compile('\d\.\d')
+    pattern = re.compile('[0-9].[0-9]')
     if pattern.match(data['imdbRating']) is None:
         return None
     return data['imdbRating']
@@ -44,11 +47,11 @@ def getMovieRating(movie_title):
 # Checks if parameter file name already has a rating.
 # Movie ratings are in the format (\d.\d)
 def hasNewRating(filename):
-    pattern = re.compile('\[IMDb \d\.\d\]')
+    pattern = re.compile('\[IMDb [0-9].[0-9]\]')
     return pattern.search(filename) is not None
 
 def hasOldRating(filename):
-    pattern = re.compile('\(\d\.\d\)')
+    pattern = re.compile('\([0-9].[0-9]\)')
     return pattern.search(filename) is not None
 
 def removeOldRating(filename):
@@ -67,11 +70,21 @@ def getMovieTitle(filename):
     return ''.join(os.path.splitext(filename)[0])
 
 def main():
+    total_files = len(os.listdir('.')) - 1
+    renamed = 0
+    skipped = 0
+
+    print ("Working...")
     for filename in os.listdir(basepath):
         # Ignore hidden files and this script file
         if filename[0] is '.' or filename == __file__:
+            skipped += 1
             continue
         if hasNewRating(filename):
+            skipped += 1;
+            continue
+        if filename == __file__:
+            skipped += 1
             continue
 
         movie_title = getMovieTitle(filename)
@@ -86,10 +99,15 @@ def main():
         file_no_ext, file_ext = os.path.splitext(filename)
         new_file_name = formatted_rating + file_no_ext + file_ext
         os.rename(os.path.join(filename), os.path.join(new_file_name))
+        print ("\'" + filename + "\' -> \'" + formatted_rating.strip() + "\'")
+        renamed += 1
 
-        print ("Processed \'" + movie_title + "\' -> " + formatted_rating[1:-2])
-
-    print ("\nDone!")
+    print ()
+    print ("    Total: " + str(total_files))
+    print ("  Renamed: " + str(renamed))
+    print ("  Skipped: " + str(skipped))
+    print ('\n' + "Finished. Press any key to exit.")
+    input()
 
 if __name__ == '__main__':
     main()
