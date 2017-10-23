@@ -11,7 +11,7 @@ Try to look for the release year of movies from all local files in the same dire
 ## Usage
 
 1. Download the corresponding file(s) to add rating or release year to files.
-2. Place the downloaded file in the same folder as your movie files.
+2. Place the downloaded file(s) in the same folder as your movie files.
 3. Run the python script using one of the following commands:
    * `python3 rating-fetcher.py`
    * `python3 year-fetcher.py`
