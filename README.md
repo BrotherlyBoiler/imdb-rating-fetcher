@@ -10,13 +10,12 @@ Try to look for the release year of movies from all local files in the same dire
 
 ## Usage
 
-1. Decide if you want the rating or the release year (or both!) you want added to your file names.
-2. Download the corresponding file.
-3. Place the downloaded file in the same folder as your movie files.
-4. Run the python script using one of the following commands:
+1. Download the corresponding file(s) to add rating or release year to files.
+2. Place the downloaded file in the same folder as your movie files.
+3. Run the python script using one of the following commands:
    * `python3 rating-fetcher.py`
    * `python3 year-fetcher.py`
-5. Voilà! All valid movies now have more information to help you decide what to watch next.
+4. Voilà! All valid movies now have more information to help you decide what to watch next.
 
 ## Examples
 
