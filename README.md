@@ -1,4 +1,4 @@
-# Add IMDb Rating and Release Year to Movies
+# IMDb Rating and Release Year for Movies
 
 Using [OMDb API](omdbapi.com), add movie release year, and/or IMDb movie rating to a file whose name is a movie title.
 
