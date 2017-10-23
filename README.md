@@ -14,6 +14,14 @@ Try to look for the release year of movies from all local files in the same dire
 2. Download the corresponding file.
 3. Place the downloaded file in the same folder as your movie files.
 4. Run the python script using one of the following commands:
-   1. `python3 rating-fetcher.py`
-   2. `python3 year-fetcher.py`
+   * `python3 rating-fetcher.py`
+   * `python3 year-fetcher.py`
 5. Voilà! All valid movies now have more information to help you decide what to watch next.
+
+## Examples
+
+#### rating-fetcher          
+P.S. I Love You (2010) [1080p].avi ⟶ **[IMDb 7.1]** P.S. I Love You (2010) [1080p].avi
+
+#### year-fetcher
+[IMDb 7.1] P.S. I Love You [1080p].avi ⟶ [IMDb 7.1] P.S. I Love You **(2010)** [1080p].avi
