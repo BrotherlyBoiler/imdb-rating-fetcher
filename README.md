@@ -21,7 +21,7 @@ Try to look for the release year of movies from all local files in the same dire
 ## Examples
 
 #### rating-fetcher          
-P.S. I Love You (2010) [1080p].avi ⟶ **[IMDb 7.1]** P.S. I Love You (2010) [1080p].avi
+P.S. I Love You [1080p].avi ⟶ **[IMDb 7.1]** P.S. I Love You [1080p].avi
 
 #### year-fetcher
 [IMDb 7.1] P.S. I Love You [1080p].avi ⟶ [IMDb 7.1] P.S. I Love You **(2010)** [1080p].avi
